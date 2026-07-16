@@ -3,63 +3,45 @@ package com.miomio;
 import java.util.List;
 
 /**
- * Interface for the Note repository
+ * Schnittstelle (Interface) fuer die Datenbank.
+ * Legt fest, welche Operationen mit Notizen moeglich sind.
+ * Autor: Asem Ramadan
  */
 public interface NoteDataSource {
 
     /**
-     * Create a new note
-     *
-     * @param note
-     * @return long id
+     * Neue Notiz in der Datenbank speichern.
+     * Gibt die ID der neuen Notiz zurueck.
      */
     long createNote(Note note);
 
     /**
-     * Get a note from the repository
-     *
-     * @param id
-     * @return Note
+     * Eine bestimmte Notiz anhand ihrer ID laden.
      */
     Note getNote(long id);
 
     /**
-     * Delete a note from the repository
-     *
-     * @param id
-     * @return boolean true if the note was deleted
-     * false if the note was not found
-     */
-
-    boolean deleteNote(Note id);
-
-    /**
-     * Update a note in the repository
-     *
-     * @param note
-     * @return boolean true if the note was updated
-     * false if the note was not found
+     * Eine bestehende Notiz aktualisieren (Titel oder Inhalt aendern).
+     * Gibt true zurueck wenn erfolgreich, sonst false.
      */
     boolean updateNote(Note note);
 
     /**
-     * Get all notes from the repository
-     *
-     * @return List<Note>
+     * Eine Notiz aus der Datenbank loeschen.
+     * Gibt true zurueck wenn erfolgreich, sonst false.
+     */
+    boolean deleteNote(Note note);
+
+    /**
+     * Alle Notizen aus der Datenbank laden.
+     * Gibt eine Liste aller Notizen zurueck.
      */
     List<Note> getAllNotes();
 
     /**
-     * Search for notes in the repository
-     *
-     * @param query
-     * @return List<Note>
+     * Notizen nach Titel oder Inhalt durchsuchen.
+     * Gibt alle passenden Notizen zurueck.
      */
     List<Note> search(String query);
-
-    /**
-     * Delete all notes from the repository
-     */
-    void deleteAllNotes();
 
 }
