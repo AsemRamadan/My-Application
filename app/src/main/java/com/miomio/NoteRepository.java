@@ -77,8 +77,30 @@ public class NoteRepository extends SQLiteOpenHelper implements NoteDataSource {
         return (rowId == -1) ? -1 : noteId;
     }
 
+    /**
+     * Eine Notiz anhand ihrer ID aus der Datenbank laden.
+     * Gibt null zurueck wenn keine Notiz mit dieser ID gefunden wurde.
+     */
     @Override
-    public Note getNote(long id) { return null; }
+    public Note getNote(long id) {
+        SQLiteDatabase db = getReadableDatabase();
+        android.database.Cursor cursor = db.rawQuery(
+                "SELECT * FROM " + NOTES_TABLE + " WHERE " + COLUMN_ID + " = " + id, null);
+
+        if (cursor.moveToFirst()) {
+            Note note = new Note();
+            note.setId(cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_ID)));
+            note.setTitle(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_TITLE)));
+            note.setContent(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CONTENT)));
+            note.setCreatedAt(cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_CREATED_AT)));
+            cursor.close();
+            db.close();
+            return note;
+        }
+        cursor.close();
+        db.close();
+        return null;
+    }
 
     @Override
     public boolean updateNote(Note note) { return false; }
