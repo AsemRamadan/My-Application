@@ -157,8 +157,34 @@ public class NoteRepository extends SQLiteOpenHelper implements NoteDataSource {
         return notes;
     }
 
+    /**
+     * Notizen nach einem Suchbegriff durchsuchen.
+     * Sucht im Titel UND im Inhalt (Gross/Kleinschreibung egal).
+     * Gibt alle passenden Notizen zurueck.
+     */
     @Override
-    public List<Note> search(String query) { return new java.util.ArrayList<>(); }
+    public List<Note> search(String query) {
+        SQLiteDatabase db = getReadableDatabase();
+        List<Note> notes = new java.util.ArrayList<>();
+        String likeQuery = "%" + query + "%";
+        android.database.Cursor cursor = db.rawQuery(
+                "SELECT * FROM " + NOTES_TABLE +
+                " WHERE " + COLUMN_TITLE + " LIKE ? OR " + COLUMN_CONTENT + " LIKE ?" +
+                " ORDER BY " + COLUMN_CREATED_AT + " DESC",
+                new String[]{likeQuery, likeQuery});
+
+        while (cursor.moveToNext()) {
+            Note note = new Note();
+            note.setId(cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_ID)));
+            note.setTitle(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_TITLE)));
+            note.setContent(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CONTENT)));
+            note.setCreatedAt(cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_CREATED_AT)));
+            notes.add(note);
+        }
+        cursor.close();
+        db.close();
+        return notes;
+    }
 
 }
 
