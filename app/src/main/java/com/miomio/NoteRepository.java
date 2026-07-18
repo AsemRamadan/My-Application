@@ -102,11 +102,36 @@ public class NoteRepository extends SQLiteOpenHelper implements NoteDataSource {
         return null;
     }
 
+    /**
+     * Eine bestehende Notiz in der Datenbank aktualisieren.
+     * Gibt true zurueck wenn mindestens eine Zeile geaendert wurde.
+     */
     @Override
-    public boolean updateNote(Note note) { return false; }
+    public boolean updateNote(Note note) {
+        SQLiteDatabase db = getWritableDatabase();
+        android.content.ContentValues content = new android.content.ContentValues();
+        content.put(COLUMN_TITLE, note.getTitle());
+        content.put(COLUMN_CONTENT, note.getContent());
+        content.put(COLUMN_CREATED_AT, note.getCreatedAt());
 
+        int rowsAffected = db.update(NOTES_TABLE, content,
+                COLUMN_ID + " = ?", new String[]{String.valueOf(note.getId())});
+        db.close();
+        return rowsAffected > 0;
+    }
+
+    /**
+     * Eine Notiz aus der Datenbank loeschen.
+     * Gibt true zurueck wenn die Notiz erfolgreich geloescht wurde.
+     */
     @Override
-    public boolean deleteNote(Note note) { return false; }
+    public boolean deleteNote(Note note) {
+        SQLiteDatabase db = getWritableDatabase();
+        int rowsDeleted = db.delete(NOTES_TABLE,
+                COLUMN_ID + " = ?", new String[]{String.valueOf(note.getId())});
+        db.close();
+        return rowsDeleted > 0;
+    }
 
     /**
      * Alle Notizen aus der Datenbank laden, neueste zuerst.
